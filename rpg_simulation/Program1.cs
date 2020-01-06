@@ -29,8 +29,18 @@ namespace rpg_simulation
                 SetAgility(rand.Next(50, 151) * averageAgility / 100);
                 SetStrength(rand.Next(50, 151) * averageStrength / 100);
             }
+
+            public void DisplayStat() { Console.WriteLine("health: {0}, agility: {1}, strength: {2}.", 
+                GetHp(), GetAgility(), GetStrength()); }
             abstract public void Rage();
             abstract public bool DoubleAttack();
+
+            public bool Dodge()
+            {
+                var rand = new Random();
+                if (rand.Next(1, 101) <= GetAgility()) return true;
+                else return false;
+            }
         }
 
         public class Elf : Race
@@ -113,11 +123,8 @@ namespace rpg_simulation
         }
         public class Archer : GameClass
         {
-            public Archer()
-            {
-                attackLine = "They shoot an arrow. It penetrates the opponent's knee. " +
-                    "They will no longer be an andenturer.";
-            }
+            public Archer() { attackLine = "They shoot an arrow. It penetrates the opponent's knee. " +
+                    "They will no longer be an andenturer."; }
             public override string GetClass() { return "Archer"; }
             public override bool Parry() { return false; }
             public override bool InstaKill() { return false; }
@@ -127,15 +134,8 @@ namespace rpg_simulation
             private readonly Race _charRace;
             private readonly GameClass _charClass;
             public int GetHp() { return _charRace.GetHp(); }
-            public string GetClass()
-            {
-                return _charClass.GetClass();
-            }
-
-            public bool Parry()
-            {
-                return _charClass.Parry();
-            }
+            public string GetClass() { return _charClass.GetClass(); }
+            public bool Parry() { return _charClass.Parry(); }
             public bool InstaKill() { return _charClass.InstaKill(); }
             public void Rage() { _charRace.Rage(); }
             public bool DoubleAttack() { return _charRace.DoubleAttack(); }
@@ -163,6 +163,9 @@ namespace rpg_simulation
                 Rage();
                 return false;
             }
+
+            public void DisplayStat() { _charRace.DisplayStat(); }
+            public bool Dodge() { return _charRace.Dodge(); }
         }
 
         static public Race AssignRace(string input)
@@ -201,7 +204,7 @@ namespace rpg_simulation
                     return null;
             }
         }
-        static public bool Round(Character character1, Character character2, bool turn1, bool is2Attack)
+        static public bool Round(Character character1, Character character2, bool turn1, bool isSecondAttack)
         {
             int characterN1, characterN2;
             if (turn1)
@@ -222,17 +225,19 @@ namespace rpg_simulation
                 return true;
             }
             attack = character1.Attack();
-            if (character2.Parry())
-            {
-                Console.Write("Character {0} too perries! Character {1} gets hit. ", characterN2, characterN1);
-                if (character1.GetAttacked(attack)) return true; ;
-            }
-            else
-            {
-                Console.Write("Character {0} gets hit. ", characterN2);
-                if (character2.GetAttacked(attack)) return true; ;
-            }
-            if (character1.DoubleAttack() & !is2Attack)
+            if (character2.Dodge()) Console.WriteLine("Character {0} dodges!", characterN2); 
+            else if (character2.Parry())
+                 {
+                 Console.Write("Character {0} perries! Character {1} gets hit. ", characterN2, characterN1);
+                 if (character1.GetAttacked(attack)) return true; ;
+                 return Round(character1, character2, turn1, false);
+                 }
+                 else
+                 {
+                     Console.Write("Character {0} gets hit. ", characterN2);
+                     if (character2.GetAttacked(attack)) return true; ;
+                 }
+            if (character1.DoubleAttack() & !isSecondAttack)
             {
                 Console.WriteLine("Character {0} is so fast, they attack twice!", characterN1);
                 return Round(character1, character2, turn1, true);
@@ -262,18 +267,25 @@ namespace rpg_simulation
             if (class2 == null) return;
             Character character1 = new Character(race1, class1);
             Character character2 = new Character(race2, class2);
+            Console.Write("Character 1: ");
+            character1.DisplayStat();
+            Console.Write("Character 2: ");
+            character2.DisplayStat();
 
+            Console.WriteLine("BATTLE START\n");
             int attack;
             if (character1.GetClass() == "Archer")
             {
+
                 Console.WriteLine("Character 1 sneaks into battle and attacks twice!");
                 attack = character1.Attack();
-                if (character2.Parry())
-                {
-                    Console.WriteLine("Character 2 too perries! Character 1 gets hit");
-                    character1.GetAttacked(attack);
-                }
-                else character2.GetAttacked(attack);
+                if (character2.Dodge()) Console.WriteLine("Character 2 dodges!");
+                else if (character2.Parry())
+                     {
+                     Console.WriteLine("Character 2 perries! Character 1 gets hit");
+                     character1.GetAttacked(attack);
+                     }
+                     else character2.GetAttacked(attack);
             }
             int characterN1 = 0;
 
