@@ -266,7 +266,7 @@ namespace rpg_simulation
             int attack;
             if (character1.GetClass() == "Archer")
             {
-                Console.WriteLine("Character 1 sneaks into battle a attacks twice!");
+                Console.WriteLine("Character 1 sneaks into battle and attacks twice!");
                 attack = character1.Attack();
                 if (character2.Parry())
                 {
