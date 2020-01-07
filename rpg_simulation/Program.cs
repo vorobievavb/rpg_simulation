@@ -16,9 +16,7 @@ namespace rpg_simulation
                 return;
             }
 
-            Console.Write("Character 1: ");
             character1.DisplayStat();
-            Console.Write("Character 2: ");
             character2.DisplayStat();
 
             Methods.Battle(character1, character2);

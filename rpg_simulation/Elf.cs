@@ -1,21 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace rpg_simulation
 {
     public class Elf : Race
     {
-        public Elf(int averageHp = (int)Stat.ElfHp,
+        public Elf(Character characterIn, Character enemyIn,
+                   int averageHp = (int)Stat.ElfHp,
                    int averageAgility = (int)Stat.ElfAgility,
                    int averageStrength = (int)Stat.ElfStrength)
-            : base(averageHp, averageAgility, averageStrength) { }
-        public override bool DoubleAttack()
+            : base(characterIn, enemyIn, averageHp, averageAgility, averageStrength) 
+        {
+            IsSecondAttack = character.IsSecondAttack;
+        }
+
+        public bool IsSecondAttack;
+        public void DoubleAttack()
         {
             var rand = new Random();
-            if (rand.Next(1, 11) <= 3) return true;
-            else return false;
+            if (rand.Next(1, 11) <= 3 && !IsSecondAttack)
+            {
+                Console.WriteLine("{0} is so fast, they attack twice!", character.name);
+                character.Attack(enemy);
+                IsSecondAttack = true;
+            }
         }
-        public override void Rage() { }
+
     }
 }

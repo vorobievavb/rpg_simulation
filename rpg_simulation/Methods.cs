@@ -8,129 +8,93 @@ namespace rpg_simulation
     {
         public static(Character, Character) ReadCharacters()
         {
+            Character character1 = new Character(null, null, null);
+            Character character2 = new Character(null, null, null);
             Console.Write("Available races: orc, human, elf.\n" +
                              "Type in the race of the first character: ");
             string input = Console.ReadLine();
-            Race race1 = Methods.AssignRace(input);
+            Race race1 = Methods.AssignRace(input, character1, character2);
             Console.Write("Type in the race of the second character: ");
             input = Console.ReadLine();
-            Race race2 = Methods.AssignRace(input);
+            Race race2 = Methods.AssignRace(input, character2, character1);
             Console.Write("Available classes: mage, warrior, archer.\n" +
                      "Type in the class of the first character: ");
             input = Console.ReadLine();
-            GameClass class1 = Methods.AssignClass(input);
+            GameClass class1 = Methods.AssignClass(input, character1, character2);
             Console.Write("Type in the class of the second character: ");
             input = Console.ReadLine();
-            GameClass class2 = Methods.AssignClass(input);
-            Character character1 = new Character(race1, class1);
-            Character character2 = new Character(race2, class2);
+            GameClass class2 = Methods.AssignClass(input, character2, character1);
+            Character character = new Character(race1, class1, "Character 1");
+            character.CharacterCloneTo(character1);
+            character = new Character(race2, class2, "Character 2");
+            character.CharacterCloneTo(character2);
+
             return (character1, character2);
         }
 
         static public void Battle(Character character1, Character character2)
         {
             Console.WriteLine("BATTLE START\n");
-            int attack;
-            if (character1.GetClass() == "Archer")
-            {
-
-                Console.WriteLine("Character 1 sneaks into battle and attacks twice!");
-                attack = character1.Attack();
-                if (character2.Dodge()) Console.WriteLine("Character 2 dodges!");
-                else if (character2.Parry())
-                {
-                    Console.WriteLine("Character 2 perries! Character 1 gets hit");
-                    character1.GetAttacked(attack);
-                }
-                else character2.GetAttacked(attack);
-            }
             int characterN1 = 0;
-
             while ((character1.Hp > 0) && (character2.Hp > 0))
             {
+                character1.IsSecondAttack = false;
+                character2.IsSecondAttack = false;
                 characterN1++;
                 if (characterN1 > 2) characterN1 = 1;
-                if (characterN1 == 1) { if (Methods.Round(character1, character2, true, false)) break; ; }
-                else if (Methods.Round(character2, character1, false, false)) break; ;
+                if (characterN1 == 1)
+                    character1.Attack(character2);
+                else
+                    character2.Attack(character1);
                 Console.ReadLine();
             }
         }
 
-        static public Race AssignRace(string input)
+        static public Race AssignRace(string input, Character character, Character enemy)
         {
             switch (input)
             {
                 case "orc":
                 case "Orc":
-                    return new Orc();
+                    return new Orc(character, enemy);
                 case "human":
                 case "Human":
-                    return new Human();
+                    Human human = new Human(character, enemy);
+                    character.BeingAttacked += human.Rage;
+                    return human;
                 case "elf":
                 case "Elf":
-                    return new Elf();
+                    Elf elf = new Elf(character, enemy);
+                    character.Attacking += elf.DoubleAttack;
+                    return elf;
                 default:
                     Console.WriteLine("This race is not available");
                     return null;
             }
         }
-        static public GameClass AssignClass(string input)
+        static public GameClass AssignClass(string input, Character character, Character enemy)
         {
-            switch (input)
+            switch (input) 
             {
                 case "mage":
                 case "Mage":
-                    return new Mage();
+                    Mage mage = new Mage(character, enemy);
+                    character.Attacking += mage.InstaKill;
+                    return mage;
                 case "warrior":
                 case "Warrior":
-                    return new Warrior();
+                    Warrior warrior = new Warrior(character, enemy);
+                    character.BeingAttacked += warrior.Parry;
+                    return warrior;
                 case "archer":
                 case "Archer":
-                    return new Archer();
+                    var archer = new Archer(character, enemy);
+                    character.Attacking += archer.FirstAttack;
+                    return archer;
                 default:
                     Console.WriteLine("This class is not available");
                     return null;
             }
-        }
-        static public bool Round(Character character1, Character character2, bool turn1, bool isSecondAttack)
-        {
-            int characterN1, characterN2;
-            if (turn1)
-            {
-                characterN1 = 1;
-                characterN2 = 2;
-            }
-            else
-            {
-                characterN1 = 2;
-                characterN2 = 1;
-            }
-            int attack;
-            Console.WriteLine("Character {0} attacks.", characterN1);
-            if (character1.InstaKill())
-            {
-                Console.WriteLine("INSTAKILL! Character {0} explodes the universe and wins.", characterN1);
-                return true;
-            }
-            attack = character1.Attack();
-            if (character2.Dodge()) Console.WriteLine("Character {0} dodges!", characterN2);
-            else if (character2.Parry())
-            {
-                Console.Write("Character {0} perries! Character {1} gets hit. ", characterN2, characterN1);
-                if (character1.GetAttacked(attack)) return true; ;
-                return Round(character1, character2, turn1, false);
-            }
-            else
-            {
-                Console.Write("Character {0} gets hit. ", characterN2);
-                if (character2.GetAttacked(attack)) return true; ;
-            }
-            if (character1.DoubleAttack() & !isSecondAttack)
-            {
-                Console.WriteLine("Character {0} is so fast, they attack twice!", characterN1);
-                return Round(character1, character2, turn1, true);
-            }
-            return false;
         }
     }
 }
