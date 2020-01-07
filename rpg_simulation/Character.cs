@@ -9,6 +9,7 @@ namespace rpg_simulation
         private GameClass _charClass;
 
         public int Hp;
+        public int baseHp;
         public int Strength;
         public void SetIsSecondAttack(bool value)
         {
@@ -35,6 +36,7 @@ namespace rpg_simulation
             if (_charRace != null)
             {
                 Hp = _charRace.Hp;
+                baseHp = Hp;
                 Strength = _charRace.Strength;
                 BeingAttackedStart += _charRace.Dodge;
             }
@@ -48,6 +50,7 @@ namespace rpg_simulation
             if (_charRace != null)
             {
                 dest.Hp = _charRace.Hp;
+                dest.baseHp = baseHp;
                 dest.Strength = _charRace.Strength;
                 dest.BeingAttackedStart += _charRace.Dodge;
             }
@@ -64,6 +67,8 @@ namespace rpg_simulation
         public void Attack(Character enemy)
         {
             AttackingStart?.Invoke();
+            if (enemy.Hp <= 0)
+                return;
             Console.WriteLine("{0} attacks.", name);
             Console.WriteLine(_charClass.attackLine);
             enemy.GetAttacked(_charRace.Strength);
@@ -75,9 +80,9 @@ namespace rpg_simulation
             _charRace.HasDodged = false;
             _charClass.HasParried = false;
             BeingAttackedStart?.Invoke(isPerry);
-            Hp -= attack;
             if (_charRace.HasDodged || _charClass.HasParried) 
                 return;
+            Hp -= attack;
             Console.WriteLine("{0} gets hit.", name);
             if (Hp <= 0)
                 Console.WriteLine("Their HP is now 0. They lose!");
