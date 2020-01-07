@@ -12,6 +12,7 @@ namespace rpg_simulation
             : base(characterIn, enemyIn, averageHp, averageAgility, averageStrength)
         {
             baseHp = Hp;
+            character.BeingAttackedEnd += Rage;
         }
 
         private bool isStrengthDouble;

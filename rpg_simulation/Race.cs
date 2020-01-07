@@ -25,16 +25,18 @@ namespace rpg_simulation
         }
 
         public bool HasDodged;
-        public bool IsSecondAttack;
+        public bool HasPerried;
+        public bool isSecondAttack;
 
-        public void Dodge()
+        public void Dodge(bool isPerry = false)
         {
             var rand = new Random();
-            if (rand.Next(1, 101) <= Agility)
+            if ((rand.Next(1, 101) <= Agility) && !isPerry && !HasPerried)
             {
                 Console.WriteLine("The opponent dodges!");
                 HasDodged = true;
             }
+            character.SetHasDodged(HasDodged);
         }
     }
 }

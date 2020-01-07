@@ -7,16 +7,20 @@ namespace rpg_simulation
         public Warrior(Character characterIn, Character enemyIn)
             : base(characterIn, enemyIn)
         {
-            attackLine = "They swing a sword randomly and somehow hit the opponent.";
+            attackLine = "They swing a sword randomly an attempt to hit the opponent.";
+            character.BeingAttackedStart += Parry;
         }
-        public void Parry()
+
+        public void Parry(bool isPerry = false)
         {
             var rand = new Random();
-            if (rand.Next(1, 11) <= 3)
+            if ((rand.Next(1, 11) <= 3) && !isPerry && !HasDodged)
             {
-                Console.WriteLine("Character 2 perries! Character 1 gets hit");
-                enemy.GetAttacked(enemy.Strength);
+                Console.WriteLine("{0} perries!", character.name);
+                enemy.GetAttacked(enemy.Strength, true);
+                HasParried = true;
             }
+            character.SetHasPerried(HasParried);
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace rpg_simulation
 {
@@ -9,18 +7,18 @@ namespace rpg_simulation
         public Archer(Character characterIn, Character enemyIn)
             : base(characterIn, enemyIn)
         {
-            attackLine = "They shoot an arrow. It penetrates the opponent's knee. " +
+            attackLine = "They shoot an arrow. It aim for the opponent's knee. " +
                          "They will no longer be an andenturer.";
+            character.AttackingEnd += FirstAttack;
         }
 
-        public bool IsFirstAttack = true;
-        private bool IsSecondAttack = false;
+        private bool isSecondAttack = false;
         public void FirstAttack()
         {
-            if (IsFirstAttack && !IsSecondAttack)
+            if (isFirstEverAttack && !isSecondAttack)
             {
-                IsFirstAttack = false;
-                IsSecondAttack = true;
+                isFirstEverAttack = false;
+                isSecondAttack = true;
                 Console.WriteLine("{0} sneaks into battle and attacks twice!", character.name);
                 character.Attack(enemy);
             }

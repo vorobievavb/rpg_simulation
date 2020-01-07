@@ -10,10 +10,23 @@ namespace rpg_simulation
 
         public int Hp;
         public int Strength;
-        public bool IsSecondAttack;
-        public void SetSecondAttack()
+        public void SetIsSecondAttack(bool value)
         {
-            _charRace.IsSecondAttack = IsSecondAttack;
+            _charRace.isSecondAttack = value;
+        }
+
+        public void SetIsFirstEverAttack(bool value)
+        {
+            _charClass.SetIsFirstEverAttack(value);
+        }
+
+        public void SetHasPerried(bool value)
+        {
+            _charRace.HasPerried = value;
+        }
+        public void SetHasDodged(bool value)
+        {
+            _charClass.HasDodged = value;
         }
         public Character(Race race, GameClass gameClass, string nameIn)
         {
@@ -23,7 +36,7 @@ namespace rpg_simulation
             {
                 Hp = _charRace.Hp;
                 Strength = _charRace.Strength;
-                BeingAttacked += _charRace.Dodge;
+                BeingAttackedStart += _charRace.Dodge;
             }
             name = nameIn;
         }
@@ -36,35 +49,41 @@ namespace rpg_simulation
             {
                 dest.Hp = _charRace.Hp;
                 dest.Strength = _charRace.Strength;
-                dest.BeingAttacked += _charRace.Dodge;
+                dest.BeingAttackedStart += _charRace.Dodge;
             }
             dest.name = name;
         }
 
+        public delegate void EventHandlerConsideringPerry(bool isPerry = false);
         public delegate void EventHandler();
-        public event EventHandler Attacking;
-        public event EventHandler BeingAttacked;
+        public event EventHandler AttackingStart;
+        public event EventHandler AttackingEnd;
+        public event EventHandlerConsideringPerry BeingAttackedStart;
+        public event EventHandler BeingAttackedEnd;
 
         public void Attack(Character enemy)
         {
+            AttackingStart?.Invoke();
             Console.WriteLine("{0} attacks.", name);
             Console.WriteLine(_charClass.attackLine);
             enemy.GetAttacked(_charRace.Strength);
-            Attacking?.Invoke();
+            AttackingEnd?.Invoke();
         }
 
-        public void GetAttacked(int attack)
+        public void GetAttacked(int attack, bool isPerry = false)
         {
             _charRace.HasDodged = false;
-            BeingAttacked?.Invoke();
+            _charClass.HasParried = false;
+            BeingAttackedStart?.Invoke(isPerry);
             Hp -= attack;
-            if (_charRace.HasDodged) 
+            if (_charRace.HasDodged || _charClass.HasParried) 
                 return;
             Console.WriteLine("{0} gets hit.", name);
             if (Hp <= 0)
                 Console.WriteLine("Their HP is now 0. They lose!");
             else
                 Console.WriteLine("Their HP is now {0}.", Hp);
+            BeingAttackedEnd?.Invoke();
         }
 
         public bool IsValid()

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace rpg_simulation
 {
@@ -10,13 +8,14 @@ namespace rpg_simulation
             : base(characterIn, enemyIn)
         {
             attackLine = "They throw a fireball. Very original.";
+            character.AttackingStart += InstaKill;
         }
         public void InstaKill()
         {
             var rand = new Random();
             if (rand.Next(1, 11) <= 1)
             {
-                Console.WriteLine("INSTAKILL! {0} explodes the universe and wins.", character.name);
+                Console.WriteLine("INSTAKILL! The fireball explodes. {0} wins.", character.name);
                 enemy.Hp = 0;
             }
         }

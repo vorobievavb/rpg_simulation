@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace rpg_simulation
 {
@@ -38,17 +36,24 @@ namespace rpg_simulation
             int characterN1 = 0;
             while ((character1.Hp > 0) && (character2.Hp > 0))
             {
-                character1.IsSecondAttack = false;
-                character1.SetSecondAttack();
-                character2.IsSecondAttack = false;
-                character2.SetSecondAttack();
+                character1.SetIsSecondAttack(false);
+                character2.SetIsSecondAttack(false);
 
                 characterN1++;
                 if (characterN1 > 2) characterN1 = 1;
                 if (characterN1 == 1)
+                {
                     character1.Attack(character2);
+                    character1.SetIsFirstEverAttack(false);
+                    character2.SetIsFirstEverAttack(false);
+                }
                 else
+                {
                     character2.Attack(character1);
+                    character1.SetIsFirstEverAttack(false);
+                    character2.SetIsFirstEverAttack(false);
+                }
+
                 Console.ReadLine();
             }
         }
@@ -62,14 +67,10 @@ namespace rpg_simulation
                     return new Orc(character, enemy);
                 case "human":
                 case "Human":
-                    Human human = new Human(character, enemy);
-                    character.BeingAttacked += human.Rage;
-                    return human;
+                    return new Human(character, enemy);
                 case "elf":
                 case "Elf":
-                    Elf elf = new Elf(character, enemy);
-                    character.Attacking += elf.DoubleAttack;
-                    return elf;
+                    return new Elf(character, enemy);
                 default:
                     Console.WriteLine("This race is not available");
                     return null;
@@ -81,19 +82,13 @@ namespace rpg_simulation
             {
                 case "mage":
                 case "Mage":
-                    Mage mage = new Mage(character, enemy);
-                    character.Attacking += mage.InstaKill;
-                    return mage;
+                    return new Mage(character, enemy);
                 case "warrior":
                 case "Warrior":
-                    Warrior warrior = new Warrior(character, enemy);
-                    character.BeingAttacked += warrior.Parry;
-                    return warrior;
+                    return new Warrior(character, enemy); ;
                 case "archer":
                 case "Archer":
-                    var archer = new Archer(character, enemy);
-                    character.Attacking += archer.FirstAttack;
-                    return archer;
+                    return new Archer(character, enemy);
                 default:
                     Console.WriteLine("This class is not available");
                     return null;
