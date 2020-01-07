@@ -42,6 +42,7 @@ namespace rpg_simulation
                 character1.SetSecondAttack();
                 character2.IsSecondAttack = false;
                 character2.SetSecondAttack();
+
                 characterN1++;
                 if (characterN1 > 2) characterN1 = 1;
                 if (characterN1 == 1)

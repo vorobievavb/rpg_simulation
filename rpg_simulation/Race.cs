@@ -17,7 +17,6 @@ namespace rpg_simulation
             Strength = rand.Next(50, 151) * averageStrength / 100;
             character = characterIn;
             enemy = enemyIn;
-            character.BeingAttacked += Dodge;
         }
 
         public void DisplayStat()

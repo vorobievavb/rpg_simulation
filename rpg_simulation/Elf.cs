@@ -16,8 +16,8 @@ namespace rpg_simulation
             if (rand.Next(1, 11) <= 3 && !IsSecondAttack)
             {
                 Console.WriteLine("{0} is so fast, they attack twice!", character.name);
-                character.Attack(enemy);
                 IsSecondAttack = true;
+                character.Attack(enemy);
             }
         }
 
