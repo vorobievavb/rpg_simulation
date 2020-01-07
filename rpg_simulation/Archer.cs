@@ -6,7 +6,6 @@ namespace rpg_simulation
 {
     public class Archer : GameClass
     {
-        public bool IsSecondAttack;
         public Archer(Character characterIn, Character enemyIn)
             : base(characterIn, enemyIn)
         {
@@ -15,11 +14,13 @@ namespace rpg_simulation
         }
 
         public bool IsFirstAttack = true;
+        private bool IsSecondAttack = false;
         public void FirstAttack()
         {
             if (IsFirstAttack && !IsSecondAttack)
             {
                 IsFirstAttack = false;
+                IsSecondAttack = true;
                 Console.WriteLine("{0} sneaks into battle and attacks twice!", character.name);
                 character.Attack(enemy);
             }

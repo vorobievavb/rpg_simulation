@@ -8,12 +8,8 @@ namespace rpg_simulation
                    int averageHp = (int)Stat.ElfHp,
                    int averageAgility = (int)Stat.ElfAgility,
                    int averageStrength = (int)Stat.ElfStrength)
-            : base(characterIn, enemyIn, averageHp, averageAgility, averageStrength) 
-        {
-            IsSecondAttack = character.IsSecondAttack;
-        }
+            : base(characterIn, enemyIn, averageHp, averageAgility, averageStrength) { }
 
-        public bool IsSecondAttack;
         public void DoubleAttack()
         {
             var rand = new Random();

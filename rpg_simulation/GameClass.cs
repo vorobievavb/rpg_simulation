@@ -4,7 +4,6 @@
     {
         public string attackLine;
         protected Character character, enemy;
-        public bool IsSecondAttack;
 
         protected GameClass(Character characterIn, Character enemyIn) 
         {

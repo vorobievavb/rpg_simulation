@@ -14,7 +14,6 @@ namespace rpg_simulation
         public void SetSecondAttack()
         {
             _charRace.IsSecondAttack = IsSecondAttack;
-            _charClass.IsSecondAttack = IsSecondAttack;
         }
         public Character(Race race, GameClass gameClass, string nameIn)
         {
