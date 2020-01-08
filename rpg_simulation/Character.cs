@@ -1,56 +1,94 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace rpg_simulation
 {
     public class Character
     {
-        private readonly Race _charRace;
-        private readonly GameClass _charClass;
+        public string name;
+        private Race _charRace;
+        private GameClass _charClass;
 
         public int Hp;
-        public string GetClass() 
-        { 
-            return _charClass.GetClass(); 
-        }
-        public bool Parry() 
-        { 
-            return _charClass.Parry(); 
-        }
-        public bool InstaKill() 
+        public int baseHp;
+        public int Strength;
+        public void SetIsSecondAttack(bool value)
         {
-            return _charClass.InstaKill();
+            _charRace.isSecondAttack = value;
         }
-        public void Rage()
+
+        public void SetIsFirstEverAttack(bool value)
         {
-            _charRace.Rage(); 
+            _charClass.SetIsFirstEverAttack(value);
         }
-        public bool DoubleAttack() { return _charRace.DoubleAttack(); }
-        public Character(Race race, GameClass gameClass)
+
+        public void SetHasPerried(bool value)
+        {
+            _charRace.HasPerried = value;
+        }
+        public void SetHasDodged(bool value)
+        {
+            _charClass.HasDodged = value;
+        }
+        public Character(Race race, GameClass gameClass, string nameIn)
         {
             _charRace = race;
             _charClass = gameClass;
-            if (_charRace != null) Hp = _charRace.Hp;
-        }
-
-        public int Attack()
-        {
-            Console.WriteLine(_charClass.attackLine);
-            return _charRace.Strength;
-        }
-
-        public bool GetAttacked(int attack)
-        {
-            _charRace.Hp = _charRace.Hp - attack;
-            if (_charRace.Hp <= 0)
+            if (_charRace != null)
             {
-                Console.WriteLine("Their HP is now 0. They lose!");
-                return true;
+                Hp = _charRace.Hp;
+                baseHp = Hp;
+                Strength = _charRace.Strength;
+                BeingAttackedStart += _charRace.Dodge;
             }
-            else Console.WriteLine("Their HP is now {0}.", _charRace.Hp);
-            Rage();
-            return false;
+            name = nameIn;
+        }
+
+        public void CharacterCloneTo(Character dest)
+        {
+            dest._charRace = _charRace;
+            dest._charClass = _charClass;
+            if (_charRace != null)
+            {
+                dest.Hp = _charRace.Hp;
+                dest.baseHp = baseHp;
+                dest.Strength = _charRace.Strength;
+                dest.BeingAttackedStart += _charRace.Dodge;
+            }
+            dest.name = name;
+        }
+
+        public delegate void EventHandlerConsideringPerry(bool isPerry = false);
+        public delegate void EventHandler();
+        public event EventHandler AttackingStart;
+        public event EventHandler AttackingEnd;
+        public event EventHandlerConsideringPerry BeingAttackedStart;
+        public event EventHandler BeingAttackedEnd;
+
+        public void Attack(Character enemy)
+        {
+            AttackingStart?.Invoke();
+            if (enemy.Hp <= 0)
+                return;
+            Console.WriteLine("{0} attacks.", name);
+            Console.WriteLine(_charClass.attackLine);
+            enemy.GetAttacked(_charRace.Strength);
+            AttackingEnd?.Invoke();
+        }
+
+        public void GetAttacked(int attack, bool isPerry = false)
+        {
+            _charRace.HasDodged = false;
+            _charClass.HasParried = false;
+            BeingAttackedStart?.Invoke(isPerry);
+            if (_charRace.HasDodged || _charClass.HasParried) 
+                return;
+            Hp -= attack;
+            Console.WriteLine("{0} gets hit.", name);
+            if (Hp <= 0)
+                Console.WriteLine("Their HP is now 0. They lose!");
+            else
+                Console.WriteLine("Their HP is now {0}.", Hp);
+            BeingAttackedEnd?.Invoke();
         }
 
         public bool IsValid()
@@ -63,11 +101,9 @@ namespace rpg_simulation
 
         public void DisplayStat()
         {
+            Console.Write("{0}: ", name);
             _charRace.DisplayStat(); 
         }
-        public bool Dodge() 
-        {
-            return _charRace.Dodge(); 
-        }
+
     }
 }

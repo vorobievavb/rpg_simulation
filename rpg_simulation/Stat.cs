@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace rpg_simulation
+﻿namespace rpg_simulation
 {
     enum Stat
     {
